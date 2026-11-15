@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Closer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FBF6F2; --card:#FFFFFF; --ink:#2A1F2D; --muted:#7A6C7D; --line:#EEE3DD;
+    --plum:#6B2E5F; --plum-2:#8E4A80; --rose:#E8A4A0; --rose-soft:#FBE9E5; --gold:#C99A4B;
+    --ok:#3F8F6B; --r:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;font-size:15px;line-height:1.5}
+  .app{max-width:480px;margin:0 auto;padding:18px 16px 96px;min-height:100vh}
+  h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;margin:0;letter-spacing:-.01em}
+  h1{font-size:30px} h2{font-size:22px} h3{font-size:17px}
+  .muted{color:var(--muted)} .small{font-size:13px}
+  .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .brand{display:flex;align-items:center;gap:8px}
+  .brand svg{flex:none}
+  .pill{font-size:12px;padding:4px 10px;border-radius:99px;background:var(--rose-soft);color:var(--plum);font-weight:600}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:14px;box-shadow:0 1px 2px rgba(60,20,50,.04)}
+  .card.hero{background:linear-gradient(160deg,#6B2E5F 0%,#93466F 100%);color:#fff;border:none}
+  .card.hero .muted{color:#F1D9E6}
+  .eyebrow{font-size:11.5px;text-transform:uppercase;letter-spacing:.09em;font-weight:600;color:var(--plum-2);margin-bottom:6px}
+  .hero .eyebrow{color:#F6C9D9}
+  .q{font-family:Fraunces,Georgia,serif;font-size:21px;line-height:1.35;margin:4px 0 2px}
+  textarea,input[type=text]{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px 13px;font:inherit;color:var(--ink);background:#fff;resize:vertical}
+  textarea{min-height:96px}
+  textarea:focus,input:focus{outline:2px solid var(--rose);border-color:transparent}
+  button{font:inherit;cursor:pointer;border:none;border-radius:12px;padding:12px 16px;font-weight:600}
+  .btn{background:var(--plum);color:#fff;width:100%}
+  .btn:hover{background:var(--plum-2)}
+  .btn:disabled{opacity:.5;cursor:default}
+  .btn.ghost{background:transparent;color:var(--plum);border:1px solid var(--line)}
+  .btn.light{background:#fff;color:var(--plum)}
+  .row{display:flex;gap:10px} .row>*{flex:1}
+  .stack>*+*{margin-top:10px}
+  .answer{border-radius:14px;padding:12px 14px;background:var(--rose-soft);margin-top:10px}
+  .answer.mine{background:#F4EEF6}
+  .answer .who{font-size:12px;font-weight:600;color:var(--plum);margin-bottom:3px}
+  .locked{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px dashed var(--rose);border-radius:14px;margin-top:10px;color:var(--muted);font-size:14px}
+  .nav{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-top:1px solid var(--line);display:flex;justify-content:center;z-index:5}
+  .nav-inner{display:flex;max-width:480px;width:100%}
+  .nav button{flex:1;background:none;border-radius:0;padding:10px 4px 12px;color:var(--muted);font-size:11.5px;font-weight:500;display:flex;flex-direction:column;align-items:center;gap:3px}
+  .nav button.on{color:var(--plum);font-weight:600}
+  .nav svg{width:22px;height:22px}
+  .score{display:flex;align-items:center;gap:18px}
+  .ring{position:relative;width:110px;height:110px;flex:none}
+  .ring b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Fraunces,serif;font-size:32px}
+  .bars .b{margin:9px 0}
+  .bars .lbl{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}
+  .track{height:8px;background:#F3EAE6;border-radius:99px;overflow:hidden}
+  .fill{height:100%;background:linear-gradient(90deg,var(--rose),var(--plum));border-radius:99px}
+  .slider{margin:16px 0}
+  .slider .lbl{display:flex;justify-content:space-between;align-items:baseline}
+  .slider .val{font-family:Fraunces,serif;font-size:20px;color:var(--plum)}
+  input[type=range]{width:100%;accent-color:var(--plum);margin-top:6px}
+  .hint{font-size:12.5px;color:var(--muted)}
+  .ex{border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:10px}
+  .ex ol{margin:8px 0 0;padding-left:20px} .ex li{margin:3px 0}
+  .tag{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:#F4EEF6;color:var(--plum);margin-right:6px}
+  .code{font-family:Fraunces,serif;font-size:30px;letter-spacing:.14em;text-align:center;padding:14px;border-radius:14px;background:var(--rose-soft);color:var(--plum);margin:10px 0}
+  .banner{font-size:13px;padding:10px 12px;border-radius:12px;background:#FFF5E1;color:#7A5A1E;margin-bottom:14px}
+  .err{font-size:13px;color:#A23B3B;margin-top:8px}
+  .streak{display:flex;gap:6px;margin-top:10px}
+  .dot{width:26px;height:26px;border-radius:50%;background:#F3EAE6;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted)}
+  .dot.on{background:var(--plum);color:#fff}
+  .reflection{white-space:pre-wrap}
+  .spin{display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:s .8s linear infinite;vertical-align:-2px}
+  @keyframes s{to{transform:rotate(360deg)}}
+  .center{text-align:center}
+  a{color:var(--plum)}
+</style>
+</head>
+<body>
+<div class="app" id="app"><div class="center muted" style="padding-top:40vh">Loading…</div></div>
+<nav class="nav" id="nav" hidden><div class="nav-inner" id="navInner"></div></nav>
+
+<script>
+/* ============================================================
+   CLOSER — prototype. Build connection the way training builds fitness.
+   ============================================================ */
+
+// ---------- Content ----------
+const QUESTIONS = [
+  {c:"heart", t:"When did you feel most loved by me recently — and what exactly did I do?"},
+  {c:"heart", t:"What is something you've been carrying lately that you haven't fully told me?"},
+  {c:"heart", t:"What part of yourself do you wish I understood better?"},
+  {c:"heart", t:"When do you feel safest with me?"},
+  {c:"heart", t:"What is one fear about us that you rarely say out loud?"},
+  {c:"heart", t:"How has loving me changed you?"},
+  {c:"heart", t:"What does a perfect ordinary day with me look like?"},
+  {c:"desire", t:"What makes you feel truly desired by me?"},
+  {c:"desire", t:"What kind of touch makes you feel most connected — and when?"},
+  {c:"desire", t:"What is something about our intimacy you'd love more of?"},
+  {c:"desire", t:"When do you feel most attractive around me?"},
+  {c:"desire", t:"What helps you let go and be fully present with me?"},
+  {c:"desire", t:"Describe a moment between us you still think about."},
+  {c:"desire", t:"Is there something new you'd like us to explore together?"},
+  {c:"dreams", t:"Where do you see us in five years — what does home feel like?"},
+  {c:"dreams", t:"What is a dream you've quietly given up on that I could help revive?"},
+  {c:"dreams", t:"What adventure do you want us to have before we're old?"},
+  {c:"dreams", t:"What legacy do you want our relationship to leave?"},
+  {c:"dreams", t:"What would you do if you knew I'd support you no matter what?"},
+  {c:"gratitude", t:"What is one small thing I do that you never want me to stop?"},
+  {c:"gratitude", t:"What quality of mine are you most grateful for this week?"},
+  {c:"gratitude", t:"What hard moment did we get through that made us stronger?"},
+  {c:"gratitude", t:"What did I do this week that you didn't thank me for yet?"},
+  {c:"repair", t:"Is there a moment this week when you felt unheard? What did you need?"},
+  {c:"repair", t:"What do you need from me when you're upset?"},
+  {c:"repair", t:"What is an old argument we keep repeating — what's really underneath it?"},
+  {c:"repair", t:"How can I make it easier for you to tell me hard things?"},
+  {c:"repair", t:"What is one thing you'd like to forgive — in me or in yourself?"},
+  {c:"soul", t:"What do you believe happens to love after we die?"},
+  {c:"soul", t:"When do you feel most connected to something bigger than yourself?"},
+  {c:"soul", t:"What has life been trying to teach you lately?"},
+  {c:"soul", t:"If our souls chose each other, why do you think they did?"},
+];
+const CAT = {heart:"Heart", desire:"Desire", dreams:"Dreams", gratitude:"Gratitude", repair:"Repair", soul:"Soul"};
+
+const DIMS = [
+  {k:"closeness", n:"Closeness", d:"How emotionally close do you feel this week?"},
+  {k:"communication", n:"Communication", d:"How well are you hearing and understanding each other?"},
+  {k:"intimacy", n:"Intimacy", d:"How satisfied are you with your physical and sexual connection?"},
+];
+
+const EXERCISES = {
+  closeness:[
+    {t:"The 20-second hug", m:2, s:["Hug for a full 20 seconds, twice a day, without talking.","Breathe slowly together until you feel your partner relax.","Notice what changes in your body afterward."]},
+    {t:"Phones-down dinner", m:30, s:["Put both phones in another room.","Each share the best and hardest moment of your day.","Ask one follow-up question before responding with your own story."]},
+    {t:"Memory lane", m:15, s:["Each pick one photo from your early days together.","Tell the story behind it from your point of view.","Share what you felt then that you never said."]},
+    {t:"Appreciation trio", m:5, s:["Tell your partner three specific things you appreciated today.","Be concrete: what they did and how it made you feel.","Receiver only says 'thank you' — no deflecting."]},
+  ],
+  communication:[
+    {t:"Mirror listening", m:15, s:["One speaks for 3 minutes about something on their mind.","The listener repeats back what they heard: 'What I'm hearing is…'","Speaker corrects or confirms. Then switch."]},
+    {t:"Weekly state of us", m:20, s:["Each answer: What went well for us this week?","What felt off, said gently with 'I felt…' not 'You did…'","Agree on one small thing to do differently next week."]},
+    {t:"The soft start-up", m:10, s:["Pick one small recurring frustration.","Raise it starting with: 'I feel… about… and I need…'","Partner responds only with understanding first, solutions later."]},
+    {t:"Dreams within conflict", m:20, s:["Choose a disagreement you keep having.","Each explain the dream or value underneath your position.","Find one way to honor both dreams."]},
+  ],
+  intimacy:[
+    {t:"Slow touch", m:20, s:["Take turns giving a slow, non-goal-oriented massage.","The receiver guides: softer, slower, there.","No expectations of where it leads — presence is the point."]},
+    {t:"Desire conversation", m:15, s:["Each finish the sentence: 'I feel most desired when…'","Then: 'Something I'd love us to try is…'","Listen without judgment. Say yes, maybe, or not now — all are welcome."]},
+    {t:"Eye-gazing", m:5, s:["Sit facing each other, close enough to touch knees.","Hold eye contact silently for 4 minutes.","Afterward, share one word for what you felt."]},
+    {t:"Date night redesign", m:60, s:["Plan a date that is new to both of you.","Dress up for each other as if it were an early date.","End the evening with ten minutes of undistracted closeness."]},
+  ],
+};
+
+// ---------- Utilities ----------
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pad = n => String(n).padStart(2,"0");
+const dayKey = (d=new Date()) => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+function weekKey(d=new Date()){
+  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const day = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - day);
+  const y0 = new Date(Date.UTC(t.getUTCFullYear(),0,1));
+  return `${t.getUTCFullYear()}-W${pad(Math.ceil(((t - y0)/86400000 + 1)/7))}`;
+}
+function hash(s){let h=2166136261;for(const ch of s){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
+function questionFor(code, day){ return QUESTIONS[hash(code+"|"+day) % QUESTIONS.length]; }
+function newCode(){
+  const a="ABCDEFGHJKMNPQRSTUVWXYZ23456789"; let s="";
+  const r = crypto.getRandomValues(new Uint32Array(8));
+  for(const x of r) s += a[x % a.length]; return s;
+}
+const daysAgo = n => { const d=new Date(); d.setDate(d.getDate()-n); return d; };
+
+// ---------- State ----------
+const S = {
+  mode:"loading", uid:null, store:null, sample:null,
+  code:null, couple:null, answers:[], checkins:[], reflections:[],
+  tab:"today", draft:"", busy:{}, err:"", aiExercise:null, slider:{closeness:7,communication:7,intimacy:7},
+  pendingRender:false, stale:false,
+};
+
+// ---------- Stores ----------
+// Real store on the artifact's database.
+function RealStore(db, uid){
+  const subs = [];
+  return {
+    async getProfile(){ const s = await db.doc(`data/users/${uid}/app`).get(); return s.exists ? s.data() : null; },
+    setProfile(o){ return db.doc(`data/users/${uid}/app`).set(o); },
+    async getCouple(code){ const s = await db.doc(`couples/${code}`).get(); return s.exists ? s.data() : null; },
+    createCouple(code, name){ return db.doc(`couples/${code}`).set({createdAt:Date.now(), createdBy:uid, members:{[uid]:{name, joinedAt:Date.now()}}}); },
+    joinCouple(code, name){ return db.doc(`couples/${code}`).update({members:{[uid]:{name, joinedAt:Date.now()}}}); },
+    watch(code, cb){
+      this.unwatch();
+      const base = db.doc(`couples/${code}`);
+      const timer = setTimeout(()=>cb.stale(true), 10000);
+      const ok = () => { clearTimeout(timer); cb.stale(false); };
+      subs.push(base.onSnapshot(s=>{ if(!s.metadata.fromCache) ok(); cb.couple(s.exists ? s.data() : null); }, e=>{ok(); cb.error(e);}));
+      for (const name of ["answers","checkins","reflections"]){
+        subs.push(base.collection(name).onSnapshot(q=>cb[name](q.docs.map(d=>({id:d.id, ...d.data()}))), e=>cb.error(e)));
+      }
+    },
+    unwatch(){ while(subs.length) subs.pop()(); },
+    saveAnswer(code, day, text){ return db.doc(`couples/${code}/answers/${day}_${uid}`).set({day, uid, text, at:Date.now()}); },
+    saveCheckin(code, wk, vals){ return db.doc(`couples/${code}/checkins/${wk}_${uid}`).set({week:wk, uid, ...vals, at:Date.now()}); },
+    saveReflection(code, day, text){ return db.doc(`couples/${code}/reflections/${day}`).set({day, text, at:Date.now()}); },
+  };
+}
+
+// Demo store: in-memory, with a simulated partner so the app can be explored solo.
+function DemoStore(){
+  const me = "me", them = "partner", code = "DEMO2026";
+  let cb = null;
+  const st = {
+    couple:{createdAt:Date.now(), members:{[me]:{name:"You"}, [them]:{name:"Alex"}}},
+    answers:[], checkins:[], reflections:[],
+  };
+  const partnerLines = {
+    heart:"Honestly, last Sunday morning when you made coffee and just sat with me without your phone. I felt chosen.",
+    desire:"When you look at me like you did at dinner on Friday, like there's no one else in the room.",
+    dreams:"I want us to drive through Patagonia, no schedule, just us and the road. And a house with a big kitchen full of friends.",
+    gratitude:"The way you always check if I've eaten when I'm stressed. It's small, but it makes me feel cared for.",
+    repair:"When I'm upset I mostly need you to stay close and listen before trying to fix it.",
+    soul:"I think we recognized something in each other that we were both searching for.",
+  };
+  const today = dayKey();
+  st.answers.push({id:`${today}_${them}`, day:today, uid:them, text:partnerLines[questionFor(code, today).c], at:Date.now()});
+  for (let w=6; w>=1; w--){
+    const wk = weekKey(daysAgo(w*7)); const base = 5 + (6-w)*0.45;
+    st.checkins.push({id:`${wk}_${me}`, week:wk, uid:me, closeness:Math.round(base+0.5), communication:Math.round(base), intimacy:Math.round(base-0.5), at:0});
+    st.checkins.push({id:`${wk}_${them}`, week:wk, uid:them, closeness:Math.round(base+1), communication:Math.round(base-0.3), intimacy:Math.round(base), at:0});
+  }
+  for (let i=1;i<=4;i++){ const d=dayKey(daysAgo(i));
+    st.answers.push({id:`${d}_${me}`, day:d, uid:me, text:"(earlier answer)", at:0});
+    st.answers.push({id:`${d}_${them}`, day:d, uid:them, text:"(earlier answer)", at:0}); }
+  const emit = () => { if(!cb) return; cb.couple(st.couple); cb.answers([...st.answers]); cb.checkins([...st.checkins]); cb.reflections([...st.reflections]); };
+  const upsert = (arr, row) => { const i = arr.findIndex(x=>x.id===row.id); i>=0 ? arr[i]=row : arr.push(row); };
+  return {
+    demo:true, uid:me, code,
+    async getProfile(){ return {coupleCode:code}; },
+    async setProfile(){}, async getCouple(){ return st.couple; }, async createCouple(){}, async joinCouple(){},
+    watch(_c, c){ cb = c; c.stale(false); emit(); }, unwatch(){},
+    async saveAnswer(_c, day, text){ upsert(st.answers, {id:`${day}_${me}`, day, uid:me, text, at:Date.now()}); emit(); },
+    async saveCheckin(_c, wk, v){
+      upsert(st.checkins, {id:`${wk}_${me}`, week:wk, uid:me, ...v, at:Date.now()});
+      upsert(st.checkins, {id:`${wk}_${them}`, week:wk, uid:them, closeness:8, communication:7, intimacy:8, at:Date.now()});
+      emit();
+    },
+    async saveReflection(_c, day, text){ upsert(st.reflections, {id:day, day, text, at:Date.now()}); emit(); },
+  };
+}
+
+// ---------- Derived data ----------
+function members(){ return S.couple?.members || {}; }
+function partnerId(){ return Object.keys(members()).find(id => id !== S.uid) || null; }
+function nameOf(id){ if(id===S.uid) return "You"; return members()[id]?.name || "Your partner"; }
+
+function weeklyScores(){
+  const by = {};
+  for (const c of S.checkins){ (by[c.week] ||= []).push(c); }
+  return Object.keys(by).sort().map(wk => {
+    const rows = by[wk];
+    const avg = k => rows.reduce((a,r)=>a+(+r[k]||0),0)/rows.length;
+    const dims = {closeness:avg("closeness"), communication:avg("communication"), intimacy:avg("intimacy")};
+    const score = Math.round((dims.closeness+dims.communication+dims.intimacy)/3*10);
+    return {week:wk, score, dims, n:rows.length};
+  });
+}
+function bothAnsweredDays(){
+  const by = {};
+  for (const a of S.answers){ (by[a.day] ||= new Set()).add(a.uid); }
+  const p = partnerId();
+  return new Set(Object.keys(by).filter(d => by[d].has(S.uid) && p && by[d].has(p)));
+}
+function streak(){
+  const days = bothAnsweredDays(); let n = 0;
+  let i = days.has(dayKey()) ? 0 : 1;
+  while (days.has(dayKey(daysAgo(i)))) { n++; i++; }
+  return n;
+}
+function weakestDim(){
+  const w = weeklyScores(); if(!w.length) return "communication";
+  const d = w[w.length-1].dims;
+  return Object.keys(d).sort((a,b)=>d[a]-d[b])[0];
+}
+
+// ---------- Render ----------
+const ICONS = {
+  today:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>',
+  checkin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h10M4 12h16M4 17h7"/><circle cx="17" cy="7" r="2"/><circle cx="14" cy="17" r="2"/></svg>',
+  progress:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5M4 19h16M8 15l4-4 3 3 5-6"/></svg>',
+  grow:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21V11M12 11c0-4 3-7 7-7 0 4-3 7-7 7zM12 14c0-3-2.5-5.5-6-5.5 0 3 2.5 5.5 6 5.5z"/></svg>',
+};
+const LOGO = '<svg width="28" height="28" viewBox="0 0 32 32"><circle cx="12" cy="16" r="9" fill="#E8A4A0" opacity=".9"/><circle cx="20" cy="16" r="9" fill="#6B2E5F" opacity=".85"/></svg>';
+
+function header(){
+  const p = partnerId();
+  return `<div class="top"><div class="brand">${LOGO}<h2>Closer</h2></div>
+    ${p ? `<span class="pill">You &amp; ${esc(nameOf(p))}</span>` : ""}</div>
+    ${S.mode==="demo" ? `<div class="banner"><b>Demo mode</b> with a simulated partner, Alex. Nothing is saved. Open this page signed in to Claude to use it for real.</div>` : ""}
+    ${S.stale ? `<div class="banner">Can't reach your data yet — it may be out of date.</div>` : ""}`;
+}
+
+function render(){
+  const ae = document.activeElement;
+  if (ae && (ae.tagName==="TEXTAREA" || ae.tagName==="INPUT") && ae.type!=="range" && (S.mode==="app"||S.mode==="demo")) { S.pendingRender = true; return; }
+  S.pendingRender = false;
+  const app = $("#app");
+  if (S.mode==="onboard") { app.innerHTML = renderOnboard(); $("#nav").hidden = true; return; }
+  if (S.mode==="waiting") { app.innerHTML = renderWaiting(); $("#nav").hidden = true; return; }
+  if (S.mode==="unavailable") { app.innerHTML = `<div class="card center" style="margin-top:30vh"><h3>Couldn't load your data</h3><p class="muted">${esc(S.err)}</p></div>`; return; }
+  if (S.mode!=="app" && S.mode!=="demo") return;
+  const views = {today:renderToday, checkin:renderCheckin, progress:renderProgress, grow:renderGrow};
+  app.innerHTML = header() + views[S.tab]();
+  $("#nav").hidden = false;
+  $("#navInner").innerHTML = [["today","Today"],["checkin","Check-in"],["progress","Progress"],["grow","Grow"]]
+    .map(([k,l]) => `<button class="${S.tab===k?"on":""}" data-tab="${k}">${ICONS[k]}${l}</button>`).join("");
+}
+
+function renderOnboard(){
+  return `<div style="padding-top:8vh">
+    <div class="brand" style="justify-content:center;margin-bottom:10px">${LOGO}</div>
+    <h1 class="center">Closer</h1>
+    <p class="center muted" style="margin:6px 0 26px">Build your connection the way training builds fitness: one honest question a day.</p>
+    <div class="card stack">
+      <label class="small muted" for="nm">What should your partner see as your name?</label>
+      <input type="text" id="nm" placeholder="Your first name" maxlength="30" value="${esc(S.nameDraft||"")}">
+    </div>
+    <div class="card stack">
+      <h3>Start as a couple</h3>
+      <p class="small muted" style="margin:0">Create a private space and get an invite code for your partner.</p>
+      <button class="btn" data-act="create" ${S.busy.create?"disabled":""}>${S.busy.create?'<span class="spin"></span>':"Create our space"}</button>
+    </div>
+    <div class="card stack">
+      <h3>Join your partner</h3>
+      <input type="text" id="jc" placeholder="Invite code" maxlength="8" style="text-transform:uppercase;letter-spacing:.1em">
+      <button class="btn ghost" data-act="join" ${S.busy.join?"disabled":""}>${S.busy.join?'<span class="spin"></span>':"Join"}</button>
+    </div>
+    ${S.err ? `<div class="err center">${esc(S.err)}</div>` : ""}
+  </div>`;
+}
+
+function renderWaiting(){
+  return `<div style="padding-top:8vh">${header()}
+    <div class="card center stack">
+      <h2>Invite your partner</h2>
+      <p class="muted" style="margin:0">Share this code. When they join, your first question unlocks.</p>
+      <div class="code">${esc(S.code)}</div>
+      <button class="btn" data-act="copy">${S.copied ? "Copied ✓" : "Copy code"}</button>
+      <p class="hint">Your partner opens this same page, enters their name, and taps <b>Join</b>.</p>
+    </div>
+    <button class="btn ghost" data-act="leave">Start over</button>
+  </div>`;
+}
+
+function renderToday(){
+  const day = dayKey(), q = questionFor(S.code, day), p = partnerId();
+  const mine = S.answers.find(a => a.day===day && a.uid===S.uid);
+  const theirs = p && S.answers.find(a => a.day===day && a.uid===p);
+  const refl = S.reflections.find(r => r.day===day);
+  const st = streak();
+  let body = "";
+  if (!mine){
+    body = `<textarea id="ans" placeholder="Take your time. Be honest — only ${esc(nameOf(p))} will see this.">${esc(S.draft)}</textarea>
+      <div style="margin-top:10px"><button class="btn light" data-act="answer" ${S.busy.answer?"disabled":""}>${S.busy.answer?'<span class="spin"></span>':"Share my answer"}</button></div>
+      ${theirs ? `<div class="locked" style="border-color:#F6C9D9;color:#F1D9E6">🔒 ${esc(nameOf(p))} has answered. Share yours to reveal it.</div>` : ""}`;
+  } else {
+    body = `<div class="answer mine" style="color:var(--ink)"><div class="who">You</div>${esc(mine.text)}</div>
+      ${theirs ? `<div class="answer" style="color:var(--ink)"><div class="who">${esc(nameOf(p))}</div>${esc(theirs.text)}</div>`
+               : `<div class="locked" style="border-color:#F6C9D9;color:#F1D9E6">Waiting for ${esc(nameOf(p))}. Their answer appears here when they share it.</div>`}`;
+  }
+  const coach = (mine && theirs && S.sample) ? `<div class="card">
+      <div class="eyebrow">Coach reflection</div>
+      ${refl ? `<p class="reflection" style="margin:4px 0 0">${esc(refl.text)}</p>`
+             : `<p class="small muted" style="margin:2px 0 12px">Get a short reflection on your answers and one question to explore together tonight.</p>
+                <button class="btn ghost" data-act="reflect" ${S.busy.reflect?"disabled":""}>${S.busy.reflect?'<span class="spin"></span> Reflecting…':"Reflect on our answers"}</button>`}
+      ${S.reflectErr ? `<div class="err">${esc(S.reflectErr)}</div>` : ""}
+    </div>` : "";
+  const dots = Array.from({length:7},(_,i)=>{ const d=dayKey(daysAgo(6-i)); const on=bothAnsweredDays().has(d);
+    return `<div class="dot ${on?"on":""}">${"MTWTFSS"[(daysAgo(6-i).getDay()+6)%7]}</div>`; }).join("");
+  return `<div class="card hero">
+      <div class="eyebrow">Today's question · ${CAT[q.c]}</div>
+      <div class="q">${esc(q.t)}</div>
+      <div style="margin-top:14px">${body}</div>
+    </div>
+    ${coach}
+    <div class="card"><div class="row" style="align-items:center"><div><div class="eyebrow">Streak</div>
+      <h2>${st} day${st===1?"":"s"}</h2><div class="small muted">Days you both answered</div></div></div>
+      <div class="streak">${dots}</div></div>`;
+}
+
+function renderCheckin(){
+  const wk = weekKey(), p = partnerId();
+  const mine = S.checkins.find(c => c.week===wk && c.uid===S.uid);
+  const theirs = p && S.checkins.find(c => c.week===wk && c.uid===p);
+  if (mine && !S.editCheckin){
+    return `<div class="card"><div class="eyebrow">This week's check-in</div><h2>Done ✓</h2>
+      <div class="bars" style="margin-top:8px">${DIMS.map(d=>`<div class="b"><div class="lbl"><span>${d.n}</span><b>${mine[d.k]}/10</b></div><div class="track"><div class="fill" style="width:${mine[d.k]*10}%"></div></div></div>`).join("")}</div>
+      <p class="small muted">${theirs ? `${esc(nameOf(p))} has checked in too. See your score in Progress.` : `Waiting for ${esc(nameOf(p))} to check in.`}</p>
+      <button class="btn ghost" data-act="editCheckin">Change my answers</button></div>`;
+  }
+  const v = S.slider;
+  return `<div class="card"><div class="eyebrow">Weekly check-in · ${wk}</div><h2>How are we doing?</h2>
+    <p class="small muted" style="margin:4px 0 0">Private, honest, 30 seconds. Your scores combine into your connection score.</p>
+    ${DIMS.map(d=>`<div class="slider"><div class="lbl"><b>${d.n}</b><span class="val" id="v-${d.k}">${v[d.k]}</span></div>
+      <div class="hint">${d.d}</div><input type="range" min="1" max="10" step="1" value="${v[d.k]}" data-dim="${d.k}" aria-label="${d.n}"></div>`).join("")}
+    <button class="btn" data-act="checkin" ${S.busy.checkin?"disabled":""}>${S.busy.checkin?'<span class="spin"></span>':"Save check-in"}</button></div>`;
+}
+
+function ring(score){
+  const r=46, c=2*Math.PI*r, off=c*(1-score/100);
+  return `<div class="ring"><svg width="110" height="110" viewBox="0 0 110 110"><circle cx="55" cy="55" r="${r}" fill="none" stroke="#F3EAE6" stroke-width="10"/>
+    <circle cx="55" cy="55" r="${r}" fill="none" stroke="url(#g)" stroke-width="10" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}" transform="rotate(-90 55 55)"/>
+    <defs><linearGradient id="g"><stop offset="0" stop-color="#E8A4A0"/><stop offset="1" stop-color="#6B2E5F"/></linearGradient></defs></svg><b>${score}</b></div>`;
+}
+
+function chart(w){
+  if (w.length < 2) return `<p class="small muted">Your trend appears after two weekly check-ins.</p>`;
+  const pts = w.slice(-8), W=420, H=150, pl=28, pr=10, pt=12, pb=24;
+  const x = i => pl + i*(W-pl-pr)/(pts.length-1), y = v => pt + (100-v)*(H-pt-pb)/100;
+  const line = pts.map((p,i)=>`${x(i)},${y(p.score)}`).join(" ");
+  const grid = [25,50,75,100].map(v=>`<line x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}" stroke="#F1E7E2"/><text x="${pl-6}" y="${y(v)+4}" font-size="10" text-anchor="end" fill="#A89AAB">${v}</text>`).join("");
+  const labels = pts.map((p,i)=>`<text x="${x(i)}" y="${H-6}" font-size="10" text-anchor="middle" fill="#A89AAB">${p.week.slice(5)}</text>`).join("");
+  const dots = pts.map((p,i)=>`<circle cx="${x(i)}" cy="${y(p.score)}" r="3.5" fill="#6B2E5F"><title>${p.week}: ${p.score}</title></circle>`).join("");
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Connection score by week">${grid}
+    <polyline points="${line}" fill="none" stroke="#6B2E5F" stroke-width="2.5" stroke-linejoin="round"/>${dots}${labels}</svg>`;
+}
+
+function renderProgress(){
+  const w = weeklyScores();
+  if (!w.length) return `<div class="card center"><h3>No check-ins yet</h3><p class="muted">Do your first weekly check-in to see your connection score.</p>
+    <button class="btn" data-tab="checkin">Go to check-in</button></div>`;
+  const cur = w[w.length-1], prev = w[w.length-2];
+  const delta = prev ? cur.score - prev.score : null;
+  return `<div class="card"><div class="eyebrow">Connection score · ${cur.week}</div>
+      <div class="score">${ring(cur.score)}<div>
+        <h3>${cur.score>=80?"Thriving":cur.score>=65?"Growing strong":cur.score>=50?"Building":"Needs care"}</h3>
+        <div class="small muted">${delta===null?"Your first week":delta>0?`▲ ${delta} from last week`:delta<0?`▼ ${-delta} from last week`:"Same as last week"}</div>
+        ${cur.n<2?`<div class="small muted">Based on one partner so far</div>`:""}
+      </div></div>
+      <div class="bars" style="margin-top:12px">${DIMS.map(d=>`<div class="b"><div class="lbl"><span>${d.n}</span><b>${cur.dims[d.k].toFixed(1)}</b></div><div class="track"><div class="fill" style="width:${cur.dims[d.k]*10}%"></div></div></div>`).join("")}</div>
+    </div>
+    <div class="card"><div class="eyebrow">Trend</div>${chart(w)}</div>
+    <div class="card"><div class="eyebrow">Shared moments</div>
+      <div class="row"><div><h2>${bothAnsweredDays().size}</h2><div class="small muted">questions answered together</div></div>
+      <div><h2>${streak()}</h2><div class="small muted">day streak</div></div></div></div>`;
+}
+
+function renderGrow(){
+  const weak = weakestDim(), dim = DIMS.find(d=>d.k===weak);
+  const list = EXERCISES[weak];
+  const pick = list[hash(weekKey()+S.code) % list.length];
+  const ex = e => `<div class="ex"><span class="tag">${e.m} min</span><b>${esc(e.t)}</b><ol>${e.s.map(s=>`<li>${esc(s)}</li>`).join("")}</ol></div>`;
+  const ai = S.aiExercise;
+  return `<div class="card"><div class="eyebrow">This week's focus · ${dim.n}</div>
+      <p class="small muted" style="margin:2px 0 0">Chosen from your latest check-in — it's your lowest area right now.</p>
+      ${ex(pick)}</div>
+    ${S.sample ? `<div class="card"><div class="eyebrow">Made for the two of you</div>
+      ${ai ? ex(ai) : `<p class="small muted" style="margin:2px 0 12px">Generate a new exercise tailored to your scores and recent answers.</p>`}
+      <button class="btn ghost" data-act="aiex" style="margin-top:10px" ${S.busy.aiex?"disabled":""}>${S.busy.aiex?'<span class="spin"></span> Creating…':ai?"Make another":"Create a personal exercise"}</button>
+      ${S.aiErr?`<div class="err">${esc(S.aiErr)}</div>`:""}</div>` : ""}
+    <div class="card"><div class="eyebrow">More for ${dim.n.toLowerCase()}</div>${list.filter(e=>e!==pick).map(ex).join("")}</div>
+    ${S.mode==="app" ? `<button class="btn ghost" data-act="leave" style="margin-top:6px">Leave this couple space</button>` : ""}`;
+}
+
+// ---------- Actions ----------
+function attach(code){
+  S.code = code;
+  S.store.watch(code, {
+    couple: c => { S.couple = c; S.mode = !c ? "onboard" : (Object.keys(c.members||{}).length < 2 ? "waiting" : (S.store.demo ? "demo" : "app")); render(); },
+    answers: a => { S.answers = a; render(); },
+    checkins: c => { S.checkins = c; render(); },
+    reflections: r => { S.reflections = r; render(); },
+    stale: v => { S.stale = v; render(); },
+    error: e => { S.err = e.message || "Connection problem"; S.stale = true; render(); },
+  });
+}
+
+async function act(a, el){
+  const day = dayKey();
+  try {
+    if (a==="create" || a==="join"){
+      const name = ($("#nm")?.value || "").trim();
+      S.nameDraft = name;
+      if (!name){ S.err = "Please enter your name first."; return render(); }
+      S.err = ""; S.busy[a] = true; render();
+      let code;
+      if (a==="create"){ code = newCode(); await S.store.createCouple(code, name); }
+      else {
+        code = ($("#jc")?.value || "").trim().toUpperCase();
+        const c = code && await S.store.getCouple(code);
+        if (!c){ S.busy[a]=false; S.err = "That code wasn't found. Check it with your partner."; return render(); }
+        const ids = Object.keys(c.members||{});
+        if (ids.length >= 2 && !ids.includes(S.uid)){ S.busy[a]=false; S.err = "This space already has two people."; return render(); }
+        if (!ids.includes(S.uid)) await S.store.joinCouple(code, name);
+      }
+      await S.store.setProfile({coupleCode:code});
+      S.busy[a] = false; S.mode = "waiting"; attach(code);
+    }
+    else if (a==="copy"){ try { await navigator.clipboard.writeText(S.code); S.copied = true; } catch { S.copied = false; } render(); }
+    else if (a==="leave"){
+      S.store.unwatch(); await S.store.setProfile({coupleCode:null});
+      Object.assign(S,{code:null,couple:null,answers:[],checkins:[],reflections:[],mode:"onboard",tab:"today"}); render();
+    }
+    else if (a==="answer"){
+      const t = ($("#ans")?.value || "").trim(); if(!t) return;
+      S.busy.answer = true; S.draft = t; render();
+      await S.store.saveAnswer(S.code, day, t); S.draft = ""; S.busy.answer = false; render();
+    }
+    else if (a==="editCheckin"){
+      const m = S.checkins.find(c=>c.week===weekKey() && c.uid===S.uid);
+      if (m) S.slider = {closeness:m.closeness, communication:m.communication, intimacy:m.intimacy};
+      S.editCheckin = true; render();
+    }
+    else if (a==="checkin"){
+      S.busy.checkin = true; render();
+      await S.store.saveCheckin(S.code, weekKey(), {...S.slider});
+      S.busy.checkin = false; S.editCheckin = false; render();
+    }
+    else if (a==="reflect") await reflect();
+    else if (a==="aiex") await aiExercise();
+  } catch(e){
+    for (const k in S.busy) S.busy[k] = false;
+    S.err = e?.code==="quota_exceeded" ? "Storage is full for this prototype." : (e?.message || "Something went wrong. Please try again.");
+    render();
+  }
+}
+
+async function reflect(){
+  const day = dayKey(), p = partnerId(), q = questionFor(S.code, day);
+  const mine = S.answers.find(a=>a.day===day && a.uid===S.uid), theirs = S.answers.find(a=>a.day===day && a.uid===p);
+  S.busy.reflect = true; S.reflectErr = ""; render();
+  try {
+    const prompt = `You are a warm, wise relationship coach inside a couples app called Closer. Two partners answered today's question privately and can now see each other's answers.
+Question: "${q.t}"
+Partner A answered: "${mine.text}"
+Partner B (${nameOf(p)}) answered: "${theirs.text}"
+Write a short reflection for both of them (max 90 words, plain text, no headings, no lists):
+1) One or two sentences naming what their answers share or reveal about their connection, gently and specifically.
+2) Then a line starting with "Tonight, ask each other:" followed by one deeper follow-up question.
+Be tasteful and non-explicit. Never diagnose, judge, or take sides. Address them as "you two".`;
+    const r = await S.sample(prompt, {modelTier:"quick"});
+    await S.store.saveReflection(S.code, day, (r.text||"").trim());
+  } catch(e){
+    S.reflectErr = e?.code==="not_granted" ? "The coach isn't available in this view." : e?.code==="rate_limited" ? "The coach needs a moment. Try again shortly." : "Couldn't create a reflection right now.";
+    if (e?.code==="not_granted") S.sample = null;
+  }
+  S.busy.reflect = false; render();
+}
+
+async function aiExercise(){
+  const w = weeklyScores(); const cur = w[w.length-1];
+  const recent = S.answers.filter(a=>a.text && !a.text.startsWith("(")).slice(-6).map(a=>`- ${a.uid===S.uid?"Partner A":"Partner B"}: ${a.text}`).join("\n");
+  S.busy.aiex = true; S.aiErr = ""; render();
+  try {
+    const prompt = `You design short connection exercises for couples in an app called Closer.
+Latest weekly scores out of 10: ${cur ? `closeness ${cur.dims.closeness.toFixed(1)}, communication ${cur.dims.communication.toFixed(1)}, intimacy ${cur.dims.intimacy.toFixed(1)}` : "none yet"}.
+Focus area: ${weakestDim()}.
+Some recent answers to daily questions:
+${recent || "(none)"}
+Create ONE fresh exercise for tonight that fits these two people. Tasteful and non-explicit; intimacy exercises may involve touch, presence and honest talk about desire.
+Reply with JSON only: {"t": "short title", "m": minutes as a number, "s": ["step 1", "step 2", "step 3"]} with 3 to 4 short steps.`;
+    const v = await S.sample.json(prompt, {modelTier:"quick"});
+    if (!v || !v.t || !Array.isArray(v.s)) throw new Error("bad");
+    S.aiExercise = {t:String(v.t), m:Number(v.m)||15, s:v.s.slice(0,5).map(String)};
+  } catch(e){
+    S.aiErr = e?.code==="not_granted" ? "Personal exercises aren't available in this view." : e?.code==="rate_limited" ? "Try again in a moment." : "Couldn't create an exercise right now.";
+    if (e?.code==="not_granted") S.sample = null;
+  }
+  S.busy.aiex = false; render();
+}
+
+// ---------- Events ----------
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-tab],[data-act]"); if(!t) return;
+  if (t.dataset.tab){ S.tab = t.dataset.tab; render(); window.scrollTo(0,0); }
+  else act(t.dataset.act, t);
+});
+document.addEventListener("input", e => {
+  if (e.target.id==="ans") S.draft = e.target.value;
+  if (e.target.dataset.dim){ S.slider[e.target.dataset.dim] = +e.target.value; const v = $("#v-"+e.target.dataset.dim); if(v) v.textContent = e.target.value; }
+});
+document.addEventListener("focusout", () => setTimeout(()=>{ if (S.pendingRender) render(); }, 150));
+
+// ---------- Boot ----------
+(async function boot(){
+  let db=null, user=null, sample=null;
+  try { [db, user, sample] = await Promise.all([claude.use("db"), claude.use("user"), claude.use("sample")]); } catch {}
+  S.sample = sample || null;
+  const uid = user ? await user.id().catch(()=>null) : null;
+  if (!db || !uid){
+    S.store = DemoStore(); S.uid = S.store.uid; S.mode = "demo"; attach(S.store.code); return;
+  }
+  S.uid = uid; S.store = RealStore(db, uid);
+  try {
+    const prof = await Promise.race([S.store.getProfile(), new Promise((_,r)=>setTimeout(()=>r(new Error("Your data can't be reached right now.")),10000))]);
+    if (prof?.coupleCode){ S.mode = "waiting"; attach(prof.coupleCode); }
+    else { S.mode = "onboard"; render(); }
+  } catch(e){ S.mode = "unavailable"; S.err = e.message || "Please try again later."; render(); }
+})();
+</script>
+</body>
+</html>
